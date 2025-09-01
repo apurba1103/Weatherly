@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <span>Weatherly</span>
+            </div>
+            <nav>
+                <button class="nav-link active" data-screen="screen-weather">
+                    <i class="fa-solid fa-cloud-sun"></i> Weather
+                </button>
+                <button class="nav-link" data-screen="screen-map">
+                    <i class="fa-solid fa-map-location-dot"></i> Cities Map
+                </button>
+                <button class="nav-link" data-screen="screen-settings">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </button>
+            </nav>
+            <div class="credits">
+                <small>Powered by OpenWeather</small>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <!-- Top bar (mobile) -->
+            <header class="topbar">
+                <button id="menuBtn" class="icon-btn"><i class="fa-solid fa-bars"></i></button>
+                <h1>Weatherly</h1>
+            </header>
+
+            <!-- Search -->
+            <!-- place this near the top, under search/ latest-searches -->
+            <div id="error-msg" class="error-msg" aria-live="polite"></div>
+
+            <section class="search">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="search-input" type="text" placeholder="Search city..." />
+                    <button id="search-button" class="btn-primary">Search</button>
+                </div>
+                <div class="chips" id="latest-searches"></div>
+            </section>
+
+            <!-- Screen: Weather -->
+            <section class="screen active" id="screen-weather">
+                <div class="dashboard">
+                    <!-- Left: Current card -->
+                    <div class="card current">
+                        <div class="current-top">
+                            <div>
+                                <h2 id="location" class="location-name">------</h2>
+                                <p id="climate">------</p>
+                            </div>
+                            <div class="temp">
+                                <i id="temp-icon" class="fa-solid fa-cloud"></i>
+                                <span id="temp-value">--</span><span class="unit" id="unit-label">°C</span>
+                            </div>
+                        </div>
+
+                        <div class="meta">
+                            <div class="meta-item"><i class="fa-solid fa-temperature-three-quarters"></i><span
+                                    id="feels-like">--</span></div>
+                            <div class="meta-item"><i class="fa-solid fa-droplet"></i><span id="humidity">--</span>
+                            </div>
+                            <div class="meta-item"><i class="fa-solid fa-wind"></i><span id="wind">--</span></div>
+                        </div>
+                        <div class="meta">
+
+                            <div class="meta-item"><i class="fa-solid fa-cloud-rain"></i> 50% Chance of Rain</div>
+                            <div class="meta-item"><i class="fa-solid fa-sun-plant-wilt"></i> UV Index: 3 (Low)</div>
+                            <div class="meta-item"><i class="fa-solid fa-eye"></i> Visibility: 5 km</div>
+                            <div class="meta-item"><i class="fa-solid fa-gauge"></i> Pressure: 1005 hPa</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Hourly + 7-day -->
+                    <div class="card detail">
+                        <h3>Today</h3>
+                        <div id="hourly-forecast" class="row-cards"></div>
+
+                        <h3>3-Day Forecast</h3>
+                        <div id="daily-forecast" class="row-cards"></div>
+                        <div class="forecast">
+                            <!-- Day 1 -->
+                            <div class="forecast-day">
+                                <div class="current-top">
+                                    <div>
+                                        <h2 class="location-name">------</h2>
+                                        <p>Sunny</p>
+                                    </div>
+                                    <div class="temp">
+                                        <i class="fa-solid fa-sun"></i>
+                                        <span>32</span><span class="unit">°C</span>
+                                    </div>
+                                </div>
+                                <div class="meta">
+                                    <div class="meta-item"><i class="fa-solid fa-temperature-three-quarters"></i> 35°C
+                                        (Feels)</div>
+                                    <div class="meta-item"><i class="fa-solid fa-droplet"></i> 55% Humidity</div>
+                                    <div class="meta-item"><i class="fa-solid fa-wind"></i> 8 km/h</div>
+                                </div>
+                            </div>
+
+                            <!-- Day 2 -->
+                            <div class="forecast-day">
+                                <div class="current-top">
+                                    <div>
+                                        <h2 class="location-name">------</h2>
+                                        <p>Cloudy</p>
+                                    </div>
+                                    <div class="temp">
+                                        <i class="fa-solid fa-cloud"></i>
+                                        <span>29</span><span class="unit">°C</span>
+                                    </div>
+                                </div>
+                                <div class="meta">
+                                    <div class="meta-item"><i class="fa-solid fa-temperature-three-quarters"></i> 31°C
+                                        (Feels)</div>
+                                    <div class="meta-item"><i class="fa-solid fa-droplet"></i> 62% Humidity</div>
+                                    <div class="meta-item"><i class="fa-solid fa-wind"></i> 10 km/h</div>
+                                </div>
+                            </div>
+
+                            <!-- Day 3 -->
+                            <div class="forecast-day">
+                                <div class="current-top">
+                                    <div>
+                                        <h2 class="location-name">Kolkata</h2>
+                                        <p>Rainy</p>
+                                    </div>
+                                    <div class="temp">
+                                        <i class="fa-solid fa-cloud-showers-heavy"></i>
+                                        <span>27</span><span class="unit">°C</span>
+                                    </div>
+                                </div>
+                                <div class="meta">
+                                    <div class="meta-item"><i class="fa-solid fa-temperature-three-quarters"></i> 28°C
+                                        (Feels)</div>
+                                    <div class="meta-item"><i class="fa-solid fa-droplet"></i> 78% Humidity</div>
+                                    <div class="meta-item"><i class="fa-solid fa-wind"></i> 12 km/h</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screen: Map -->
+            <section class="screen" id="screen-map">
+                <div class="card">
+                    <h3>Cities Map</h3>
+                    <div id="map" class="map"></div>
+                    <p class="hint"><i class="fa-solid fa-circle-info"></i> Click a marker to load weather for that
+                        city.</p>
+                </div>
+            </section>
+
+            <!-- Screen: Settings -->
+            <section class="screen" id="screen-settings">
+                <div class="card settings">
+                    <h3>Settings</h3>
+                    <div class="setting">
+                        <div class="setting-info">
+                            <h4>Temperature Units</h4>
+                            <p>Choose your preferred unit.</p>
+                        </div>
+                        <div class="setting-control">
+                            <div class="segmented">
+                                <button id="unit-c" class="seg active">°C</button>
+                                <button id="unit-f" class="seg">°F</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <div class="setting-info">
+                            <h4>Compact Layout</h4>
+                            <p>Reduce padding for small screens.</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="switch">
+                                <input id="compactToggle" type="checkbox" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
